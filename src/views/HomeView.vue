@@ -1,7 +1,10 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    <h1>这里是测试文字</h1>
+    <ul>
+      <li>无序列表LI</li>
+      <li>无序列表LI</li>
+    </ul>
   </div>
 </template>
 
