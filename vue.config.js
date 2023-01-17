@@ -4,9 +4,9 @@
 // });
 const path = require("path");
 
-const AutoImport = require("unplugin-auto-import/webpack");
-const Components = require("unplugin-vue-components/webpack");
-const { ElementPlusResolver } = require("unplugin-vue-components/resolvers");
+// const AutoImport = require("unplugin-auto-import/webpack");
+// const Components = require("unplugin-vue-components/webpack");
+// const { ElementPlusResolver } = require("unplugin-vue-components/resolvers");
 
 module.exports = {
   // 基本路径
@@ -19,17 +19,17 @@ module.exports = {
    * webpack配置,see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
    **/
   chainWebpack: (config) => {},
-  configureWebpack: (config) => {
-    config.plugins = [
-      ...config.plugins,
-      AutoImport({
-        resolvers: [ElementPlusResolver()],
-      }),
-      Components({
-        resolvers: [ElementPlusResolver()],
-      }),
-    ];
-  },
+  // configureWebpack: (config) => {
+  //   config.plugins = [
+  //     ...config.plugins,
+  //     AutoImport({
+  //       resolvers: [ElementPlusResolver()],
+  //     }),
+  //     Components({
+  //       resolvers: [ElementPlusResolver()],
+  //     }),
+  //   ];
+  // },
   // configureWebpack: {
   //   plugins: [
   //     AutoImport({
@@ -63,7 +63,22 @@ module.exports = {
    */
   pwa: {},
   // webpack-dev-server 相关配置
-  devServer: {},
+  devServer: {
+    open: false,
+    host: "0.0.0.0", // 编译完成是否自动打开网页
+    port: 8080, // 指定使用地址
+    proxy: {
+      [process.env.VUE_APP_API]: {
+        target: process.env.VUE_APP_DEV_TARGET, // API服务器地址
+        changeOrigin: true, //  是否匀速跨域
+        ws: false, // 是否启用websockets
+        secure: false, // 是否启动https接口
+        pathRewrite: {
+          [`^${process.env.VUE_APP_API}`]: "", // 匹配开头为/devApi的字符串，并替换成空字符串
+        },
+      },
+    },
+  },
   /**
    * 第三方插件配置
    */
