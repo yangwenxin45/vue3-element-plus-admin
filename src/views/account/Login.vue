@@ -49,17 +49,13 @@ import { ref, reactive, toRefs, getCurrentInstance } from 'vue';
 import { validate_email } from '../../utils/validate';
 import { GetCode, ErrorHttp } from '@/api/common';
 import { Register, Login } from '@/api/account';
-import sha1 from 'js-sha1'
+import sha1 from 'js-sha1';
 
 export default {
     name: "Login",
     components: {},
     props: {},
     setup(props) {
-        const instance = getCurrentInstance();
-        // 获取实例上下文
-        const { proxy } = getCurrentInstance();
-
         // 用户名校验
         const validate_name_rules = (rule, value, callback) => {
             let regEmail = validate_email(value);
@@ -161,7 +157,7 @@ export default {
             const passwords = data.form.passwords;
 
             if (username === '' || !validate_email(username)) {
-                proxy.$message({
+                ElMessage({
                     message: '用户名不能为空或格式不正确',
                     type: "error"
                 })
@@ -169,7 +165,7 @@ export default {
             }
 
             if (password === '' || !regPassword.test(password)) {
-                proxy.$message({
+                ElMessage({
                     message: '密码不能为空或格式不正确',
                     type: "error"
                 })
@@ -177,7 +173,7 @@ export default {
             }
 
             if (data.current_menu === 'register' && password !== passwords) {
-                proxy.$message({
+                ElMessage({
                     message: "两次密码不一致",
                     type: 'error'
                 })
@@ -195,11 +191,7 @@ export default {
             GetCode(requestData).then(response => {
                 console.log(response);
                 const result = response;
-                // if (result.resCode === 1024) {
-                //     proxy.$message.error(result.message);
-                //     return false;
-                // }
-                proxy.$message({
+                ElMessage({
                     message: result.message,
                     type: "success"
                 })
@@ -228,16 +220,6 @@ export default {
             }, 1000)
         }
 
-        // const submitForm = () => {
-        //     proxy.$refs.account_form.validate((valid) => {
-        //         if (valid) {
-        //             alert('submit!');
-        //         } else {
-        //             alert('表单校验不通过');
-        //             return false;
-        //         }
-        //     })
-        // }
         const account_form = ref(null);
         const submitForm = (formName) => {
             account_form.value.validate((valid) => {
@@ -255,7 +237,7 @@ export default {
             }
             data.submit_button_loading = true;
             Register(requestData).then(response => {
-                proxy.$message({
+                ElMessage({
                     message: response.message,
                     type: "success"
                 });
@@ -274,7 +256,7 @@ export default {
             }
             data.submit_button_loading = true;
             Login(requestData).then(response => {
-                proxy.$message({
+                ElMessage({
                     message: response.message,
                     type: "success"
                 })
@@ -285,7 +267,7 @@ export default {
         }
 
         const reset = () => {
-            proxy.$refs.account_form.resetFields();
+            account_form.value.resetFields();
             data.current_menu = "login";
             data.code_button_timer && clearInterval(data.code_button_timer);
             data.code_button_text = "获取验证码";

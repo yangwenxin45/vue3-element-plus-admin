@@ -1,5 +1,4 @@
 import axios from "axios";
-import { ElMessage } from "element-plus";
 
 console.log(process.env.VUE_APP_API);
 

@@ -4,9 +4,9 @@
 // });
 const path = require("path");
 
-// const AutoImport = require("unplugin-auto-import/webpack");
-// const Components = require("unplugin-vue-components/webpack");
-// const { ElementPlusResolver } = require("unplugin-vue-components/resolvers");
+const AutoImport = require("unplugin-auto-import/webpack");
+const Components = require("unplugin-vue-components/webpack");
+const { ElementPlusResolver } = require("unplugin-vue-components/resolvers");
 
 module.exports = {
   // 基本路径
@@ -30,16 +30,16 @@ module.exports = {
   //     }),
   //   ];
   // },
-  // configureWebpack: {
-  //   plugins: [
-  //     AutoImport({
-  //       resolvers: [ElementPlusResolver()],
-  //     }),
-  //     Components({
-  //       resolvers: [ElementPlusResolver()],
-  //     }),
-  //   ],
-  // },
+  configureWebpack: {
+    plugins: [
+      AutoImport({
+        resolvers: [ElementPlusResolver()],
+      }),
+      Components({
+        resolvers: [ElementPlusResolver()],
+      }),
+    ],
+  },
   // 生产环境是否生成 sourceMap 文件
   productionSourceMap: false,
   // css相关配置
