@@ -4,6 +4,10 @@
 // });
 const path = require("path");
 
+function resolve(dir) {
+  return path.join(__dirname, dir);
+}
+
 const AutoImport = require("unplugin-auto-import/webpack");
 const Components = require("unplugin-vue-components/webpack");
 const { ElementPlusResolver } = require("unplugin-vue-components/resolvers");
@@ -18,7 +22,37 @@ module.exports = {
   /** vue3.0内置了webpack所有东西，
    * webpack配置,see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
    **/
-  chainWebpack: (config) => {},
+
+  // chainWebpack: (config) => {
+  //   // svg 图标解析
+  //   const svgRule = config.module.rule("svg"); //默认规则赋给 subRule 变量
+  //   svgRule.uses.clear(); // 清除已有的所有规则。
+  //   svgRule // 添加要替换的规则
+  //     .use("svg-sprite-loader")
+  //     .loader("svg-sprite-loader")
+  //     .options({
+  //       symbolId: "icon-[name]",
+  //       include: ["./src/components/svgIcon/icon"], // 特别注意的目录路径
+  //     });
+  // },
+  chainWebpack: (config) => {
+    config.module
+      .rule("svg")
+      .exclude.add(resolve("./src/components/svgIcon/icon"))
+      .end();
+    config.module
+      .rule("icons")
+      .test(/.svg$/)
+      .include.add(resolve("./src/components/svgIcon/icon"))
+      .end()
+      .use("svg-sprite-loader")
+      .loader("svg-sprite-loader")
+      .options({
+        symbolId: "icon-[name]",
+      })
+      .end();
+  },
+
   // configureWebpack: (config) => {
   //   config.plugins = [
   //     ...config.plugins,
