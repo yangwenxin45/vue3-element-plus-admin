@@ -1,6 +1,6 @@
 <template>
     <el-container id="layout-container" direction="horizontal">
-        <el-aside id="layout-aside" width="250px">
+        <el-aside id="layout-aside" :width="collapse === true ? '60px' : '250px'">
             <LayoutAside />
         </el-aside>
         <el-container>
@@ -18,6 +18,8 @@
 import LayoutAside from './components/Aside.vue';
 import LayoutHeader from './components/Header.vue';
 import LayoutMain from './components/Main.vue';
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 
 export default {
     name: "Layout",
@@ -26,7 +28,13 @@ export default {
     },
     props: {},
     setup() {
-        return {}
+        const store = useStore();
+
+        const collapse = computed(() => store.state.app.collapse);
+
+        return {
+            collapse
+        }
     }
 }
 </script>
@@ -38,10 +46,15 @@ export default {
 
 #layout-aside {
     background-color: #344a5f;
+    @include webkit(transition, all .3s ease 0s);
 }
 
 #layout-header {
-    background-color: #77bc99;
+    // background-color: #77bc99;
+    position: relative;
+    z-index: 10;
+    background-color: $color_white;
+    @include webkit(box-shadow, 0 0 10px 0 rgba(0, 0, 0, .5));
 }
 
 #layout-main {

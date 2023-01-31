@@ -50,12 +50,16 @@ import { validate_email } from '../../utils/validate';
 import { GetCode, ErrorHttp } from '@/api/common';
 import { Register, Login } from '@/api/account';
 import sha1 from 'js-sha1';
+import { useStore } from "vuex";
+import router from '@/router';
 
 export default {
     name: "Login",
     components: {},
     props: {},
     setup(props) {
+        const store = useStore();
+
         // 用户名校验
         const validate_name_rules = (rule, value, callback) => {
             let regEmail = validate_email(value);
@@ -255,11 +259,26 @@ export default {
                 code: data.form.code
             }
             data.submit_button_loading = true;
-            Login(requestData).then(response => {
+            // Login(requestData).then(response => {
+            //     ElMessage({
+            //         message: response.message,
+            //         type: "success"
+            //     })
+            //     reset();
+            // }).catch(error => {
+            //     data.submit_button_loading = false;
+            // })
+            store.dispatch("app/loginAction", requestData).then(response => {
                 ElMessage({
                     message: response.message,
                     type: "success"
-                })
+                });
+                // store.commit('app/SET_TOKEN', response.data.token);
+                // store.commit('app/SET_USERNAME', response.data.username);
+                // 路由跳转
+                router.push({
+                    path: "/console"
+                });
                 reset();
             }).catch(error => {
                 data.submit_button_loading = false;

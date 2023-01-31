@@ -2,8 +2,8 @@
     <h1 class="logo">
         <img :src="logo" alt="统一报名缴费平台" />
     </h1>
-    <el-menu :default-active="currentPath" background-color="#344a5f" text-color="#fff" active-text-color="#ffffff"
-        router>
+    <el-menu :collapse="collapse" :default-active="currentPath" background-color="#344a5f" text-color="#fff"
+        active-text-color="#ffffff" router>
         <template v-for="item in routers" :key="item.path">
             <template v-if="!item.hidden">
                 <!-- 一级菜单 -->
@@ -11,14 +11,15 @@
                     <el-menu-item :index="item.children[0].path">
                         <!-- <img class="menu-icon" :src="item.meta.icon" alt=""> -->
                         <svg-icon :icon-name="item.meta && item.meta.icon" class-name="aside-menu-svg"></svg-icon>
-                        <template #title>{{ item.children[0].meta && item.children[0].meta.title }}</template>
+                        <template #title>
+                            <span>{{ item.children[0].meta && item.children[0].meta.title }}</span>
+                        </template>
                     </el-menu-item>
                 </template>
                 <!-- 子级菜单 -->
                 <template v-else>
                     <el-sub-menu v-if="item.children && item.children.length > 0" :index="item.path">
                         <template #title>
-                            <!-- <img class="menu-icon" :src="item.meta && item.meta.icon" alt=""> -->
                             <svg-icon :icon-name="item.meta && item.meta.icon" class-name="aside-menu-svg"></svg-icon>
                             <span>{{ item.meta && item.meta.title }}</span>
                         </template>
@@ -37,6 +38,7 @@
 <script>
 import { useRouter, useRoute } from "vue-router";
 import { reactive, toRefs, computed } from "vue";
+import { useStore } from "vuex";
 
 export default {
     name: "Aside",
@@ -46,6 +48,7 @@ export default {
         const { options } = useRouter();
         const routers = options.routes;
         const { path } = useRoute();
+        const store = useStore();
 
         // 判断是否只要一个子级菜单
         const hasOnlyChild = (children) => {
@@ -66,7 +69,10 @@ export default {
         const currentPath = computed(() => path);
 
         const data = reactive({
-            logo: require("@/assets/images/logo.png")
+            logo: computed(() => {
+                return store.state.app.collapse ? require("@/assets/images/logo-min.png") : require("@/assets/images/logo.png")
+            }),
+            collapse: computed(() => store.state.app.collapse)
         })
 
         return {

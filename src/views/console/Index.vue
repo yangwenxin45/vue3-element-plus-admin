@@ -5,6 +5,7 @@
 
 <script>
 import { ref } from "vue";
+import { useStore } from 'vuex';
 
 export default {
     name: 'NewsIndex',
@@ -12,6 +13,9 @@ export default {
     props: {},
     setup(props) {
         const icon = ref("home");
+
+        const store = useStore();
+
         return {
             icon
         }

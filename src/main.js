@@ -8,6 +8,7 @@ import axios from "axios";
 import * as ElementPlusIconsVue from "@element-plus/icons-vue";
 import SvgIcon from "@/components/svgIcon/Index.vue";
 import "@/components/svgIcon/svg";
+import "./router/permit";
 
 const app = createApp(App);
 app.config.globalProperties.$axios = axios;

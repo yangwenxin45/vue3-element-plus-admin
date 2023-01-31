@@ -15,3 +15,11 @@ export function Login(data = {}) {
     data,
   });
 }
+
+export function Logout(data = {}) {
+  return instance.request({
+    method: "post",
+    url: "/logout/",
+    data,
+  });
+}

@@ -1,4 +1,6 @@
 import axios from "axios";
+import { getToken, getUsername, removeToken, removeUsername } from "./cookies";
+import router from "@/router";
 
 console.log(process.env.VUE_APP_API);
 
@@ -11,6 +13,13 @@ const instance = axios.create({
 // 添加请求拦截器
 instance.interceptors.request.use(
   function (config) {
+    // 设置请求头
+    if (getToken()) {
+      config.headers["Token"] = getToken();
+    }
+    if (getUsername()) {
+      config.headers["Username"] = getUsername();
+    }
     return config;
   },
   function (error) {
@@ -39,6 +48,14 @@ instance.interceptors.response.use(
         message: errorData.message,
         type: "error",
       });
+    }
+    // token失效自动退出
+    if (errorData.resCode === 1010) {
+      router.replace({
+        name: "Login",
+      });
+      removeToken();
+      removeUsername();
     }
     // 对响应错误做点什么
     return Promise.reject(errorData);
