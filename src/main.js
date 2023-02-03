@@ -9,10 +9,11 @@ import * as ElementPlusIconsVue from "@element-plus/icons-vue";
 import SvgIcon from "@/components/svgIcon/Index.vue";
 import "@/components/svgIcon/svg";
 import "./router/permit";
+import Global from "@/utils/global";
 
 const app = createApp(App);
 app.config.globalProperties.$axios = axios;
-app.use(store).use(router);
+app.use(store).use(router).use(Global);
 // app.use(ElementPlus);
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component);

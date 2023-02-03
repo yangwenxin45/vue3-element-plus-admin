@@ -21,12 +21,17 @@
                     <el-sub-menu v-if="item.children && item.children.length > 0" :index="item.path">
                         <template #title>
                             <svg-icon :icon-name="item.meta && item.meta.icon" class-name="aside-menu-svg"></svg-icon>
+                            <!-- <el-icon>
+                                <document />
+                            </el-icon> -->
                             <span>{{ item.meta && item.meta.title }}</span>
                         </template>
                         <template v-for="child in item.children" :key="child.path">
-                            <el-menu-item v-if="!child.hidden" :index="child.path">{{
-                                child.meta && child.meta.title
-                            }}</el-menu-item>
+                            <el-menu-item v-if="!child.hidden" :index="child.path">
+                                <template #title>
+                                    <span>{{ child.meta && child.meta.title }}</span>
+                                </template>
+                            </el-menu-item>
                         </template>
                     </el-sub-menu>
                 </template>
@@ -70,7 +75,8 @@ export default {
 
         const data = reactive({
             logo: computed(() => {
-                return store.state.app.collapse ? require("@/assets/images/logo-min.png") : require("@/assets/images/logo.png")
+                // return store.state.app.collapse ? require("@/assets/images/logo-min.png") : require("@/assets/images/logo.png");
+                return store.state.app.collapse ? require("@/assets/images/logo-min.png") : require("@/assets/logo.png");
             }),
             collapse: computed(() => store.state.app.collapse)
         })
@@ -92,6 +98,7 @@ export default {
 
     img {
         margin: auto;
+        height: 30px;
     }
 }
 </style>
