@@ -1,10 +1,9 @@
 <template>
+    <BasisForm :item="form_config.form_item" :button="form_config.form_button" label-width="120px"
+        :field="form_config.form_data" @callback="handlerSubmitForm" :hidden="form_config.form_hidden" />
+
     <el-form :model="field" label-width="150px" ref="formDom" :rules="form_rules">
         <el-form-item label="信息类别：" prop="category_id">
-            <!-- <el-select v-model="data.category">
-                <el-option v-for="item in data.category_opacity" :key="item.value" :value="item.value"
-                    :label="item.label"></el-option>
-            </el-select> -->
             <el-cascader v-model="field.category_id" :options="category_data.category_options"
                 :props="data.cascader_props"></el-cascader>
         </el-form-item>
@@ -54,10 +53,11 @@ import { useRouter, useRoute } from 'vue-router';
 import { categoryHook } from "@/hook/infoHook";
 import { UploadFile } from "@/api/common";
 import { InfoCreate, GetDetailed, InfoEdit } from "@/api/info";
+import BasisForm from "@/components/form";
 
 export default {
     name: 'InfoDetailed',
-    components: { Editor, Toolbar },
+    components: { Editor, Toolbar, BasisForm },
     props: {},
     setup(props) {
         const store = useStore();
@@ -81,12 +81,12 @@ export default {
                 status: "1"
             },
             form_rules: {
-                category_id: [{ required: true, message: "分类不能为空", trigger: 'change' }],
-                title: [{ required: true, message: "标题不能为空", trigger: 'change' }],
-                image_url: [{ required: true, message: "缩略图不能为空", trigger: 'change' }],
-                create_date: [{ required: true, message: "请选择发布日期", trigger: 'change' }],
-                status: [{ required: true, message: "请选择发布状态", trigger: 'change' }],
-                content: [{ required: true, message: "内容不能为空", trigger: 'change' }]
+                category_id: [{ type: "cascader", required: true, message: "分类不能为空", trigger: 'change' }],
+                title: [{ type: "input", required: true, message: "标题不能为空", trigger: 'change' }],
+                image_url: [{ type: "upload", required: true, message: "缩略图不能为空", trigger: 'change' }],
+                create_date: [{ type: "date", required: true, message: "请选择发布日期", trigger: 'change' }],
+                status: [{ type: "radio", required: true, message: "请选择发布状态", trigger: 'change' }],
+                content: [{ type: "wangeditor", required: true, message: "内容不能为空", trigger: 'change' }]
             }
         });
 
@@ -178,9 +178,110 @@ export default {
             GetDetailed({ id: data.row_id }).then(response => {
                 const response_data = response.data;
                 form_data.field = response_data;
+                form_config.form_data = response_data;
                 // editor.setHtml(response_data.content);
             })
         }
+
+        // 组件化
+        const form_config = reactive({
+            form_item: [
+                {
+                    label: "信息分类",
+                    prop: "category_id",
+                    type: "cascader",
+                    props: {
+                        label: "category_name",
+                        value: "id"
+                    },
+                    url: "category",
+                },
+                {
+                    label: "信息标题",
+                    prop: "title",
+                    placeholder: "请输入标题",
+                    type: "input",
+                    // width: "300px",
+                    // max_length: 50,
+                    // min_length: 1,
+                    // required: true,
+                    // message: "请务必填写标题",
+                    // rule: [
+                    //     { min: 3, max: 5, message: 'Length should be 3 to 5', trigger: 'change' }
+                    // ]
+                },
+                {
+                    label: "缩略图",
+                    prop: "image_url",
+                    type: "upload"
+                },
+                {
+                    label: "发布日期",
+                    prop: "create_date",
+                    type: "date",
+                    data_type: "date",
+                    date_format: "YYYY-MM-DD HH:mm:ss",
+                    date_value: "YYYY-MM-DD HH:mm:ss"
+                },
+                {
+                    label: "是否发布",
+                    prop: "status",
+                    type: "radio",
+                    options: [
+                        {
+                            value: "1",
+                            label: "是"
+                        },
+                        {
+                            value: "0",
+                            label: "否"
+                        }
+                    ],
+                    // relation_hidden: [
+                    //     ['title', { "1": true, "0": true }],
+                    //     ['image_url', { "1": true }],
+                    // ],
+                    // relation_disabled: [
+                    //     ['title', { "0": true }]
+                    // ]
+                },
+                {
+                    label: "内容描述",
+                    prop: "content",
+                    type: "wangeditor"
+                }
+            ],
+            form_button: [
+                {
+                    label: "提交",
+                    type: "danger",
+                    key: "submit"
+                },
+                {
+                    label: "重置",
+                    type: "primary",
+                    key: "reset"
+                },
+                {
+                    label: "关闭",
+                    type: "primary",
+                    key: "close",
+                    callback: () => handlerClose()
+                }
+            ],
+            form_data: {
+                category_id: "",
+                title: "",
+                image_url: "",
+                create_date: "",
+                status: "1",
+                content: ""
+            },
+            form_hidden: {
+                category_id: true
+            },
+
+        })
 
         onBeforeMount(() => {
             getList();
@@ -201,7 +302,9 @@ export default {
             toolbarConfig,
             editorConfig,
             handleCreated,
-            handleChange
+            handleChange,
+
+            form_config
         }
     }
 }

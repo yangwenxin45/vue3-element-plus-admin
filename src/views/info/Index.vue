@@ -30,6 +30,12 @@
             </router-link>
         </el-col>
     </el-row>
+    <BasisTable :columns="table_config.table_header" :config="table_config.config" :request="table_config.request"
+        @onload="handlerOnload">
+        <template v-slot:operation="slotData">
+            <el-button type="danger" size="small" @click="handlerDetailed(slotData.data.id)">编辑</el-button>
+        </template>
+    </BasisTable>
     <el-table ref="table" :border="true" :data="data.tableData" style="width: 100%"
         @selection-change="handlerSelectionChange">
         <el-table-column type="selection" width="55"></el-table-column>
@@ -55,24 +61,28 @@
         </el-col>
         <el-col :span="18">
             <el-pagination class="pull-right" small background @size-change="handlerSizeChange"
-                @current-change="handlerCurrentChange" :current-page="data.current_page" :page-size="10"
-                :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
-                :total="data.total"></el-pagination>
+                @current-change="handlerCurrentChange" v-model:current-page="data.current_page"
+                v-model:page-size="data.pageSize" :page-sizes="[1, 10, 20, 50, 100]"
+                layout="total, sizes, prev, pager, next, jumper" :total="data.total"></el-pagination>
         </el-col>
     </el-row>
 </template>
 
 <script>
-import { onBeforeMount, reactive, getCurrentInstance } from 'vue';
+import { onBeforeMount, reactive, getCurrentInstance, provide } from 'vue';
 import { GetTableList, Status, Delete } from "@/api/info";
 import { getDate } from "@/utils/common";
 import { dayjs } from 'element-plus';
 import { categoryHook } from "@/hook/infoHook";
 import { useRouter } from "vue-router";
+import BasisTable from "@/components/table";
+import globalData from "@/js/data";
 
 export default {
     name: 'InfoIndex',
-    components: {},
+    components: {
+        BasisTable
+    },
     props: {},
     setup(props) {
         // 获取实例上下文
@@ -96,6 +106,7 @@ export default {
             ],
             tableData: [],
             currentPage: 1,
+            pageSize: 10,
             total: 0,
             row_data_id: "",
         });
@@ -107,6 +118,64 @@ export default {
             key: "",
             keyword: ""
         });
+
+        const table_config = reactive({
+            table_header: [
+                {
+                    label: "标题",
+                    prop: "title",
+                    width: "500"
+                },
+                {
+                    label: "类别",
+                    prop: "category_name",
+                    width: "200"
+                },
+                {
+                    label: "日期",
+                    prop: "createDate",
+                    type: "function",
+                    callback: (row) => {
+                        return getDate({
+                            value: row.createDate * 1000
+                        });
+                    }
+                },
+                {
+                    label: "发布状态",
+                    prop: "status",
+                    type: "switch",
+                    key_id: "id",
+                    api_module: "info",
+                    api_key: "info_status",
+                    api_url: "/news/status/"
+                },
+                {
+                    label: "操作",
+                    type: "slot",
+                    slot_name: "operation",
+                    width: "200",
+                    delete_elem: true
+                }
+            ],
+            config: {
+                selection: true,
+                batch_delete: true,
+                search: true
+            },
+            request: {
+                url: "info",
+                data: {
+                    pageNumber: 1,
+                    pageSize: 10,
+                },
+                delete_key: "id"
+            }
+        });
+
+        const handlerOnload = (data) => {
+            console.log(data);
+        }
 
         const handlerGetList = () => {
             const request_data = formatParams();
@@ -208,6 +277,69 @@ export default {
             })
         }
 
+        const search_config = reactive({
+            label_width: "80px",
+            form_button_group: [
+                {
+                    label: "新增",
+                    type: "danger",
+                    callback: () => addInfo()
+                }
+            ],
+            form_item: [
+                {
+                    type: "cascader",
+                    label: "类别",
+                    prop: "category_id",
+                    props: {
+                        label: "category_name",
+                        value: "id"
+                    },
+                    url: "category",
+                    col: 6
+                },
+                {
+                    type: "select",
+                    label: "发布状态",
+                    prop: "status",
+                    width: "100px",
+                    options: globalData.whether,
+                    col: 4
+                },
+                {
+                    type: "keyword",
+                    label: "关键字",
+                    prop: "keyword",
+                    options: [
+                        {
+                            label: "ID",
+                            value: "id"
+                        },
+                        {
+                            label: "标题",
+                            value: "title"
+                        }
+                    ],
+                    col: 8
+                }
+            ],
+            form_button: {
+                reset_button: true
+            },
+            form_data: {
+                category_id: "",
+                status: ""
+            },
+            button_col: 6
+        })
+        provide("search_config", search_config);
+
+        const addInfo = () => {
+            push({
+                path: "/newsDetailed"
+            })
+        }
+
         onBeforeMount(() => {
             handlerGetList();
             getList();
@@ -217,6 +349,7 @@ export default {
             data,
             category_data,
             request_data,
+            table_config,
             handlerGetList,
             formatDate,
             handlerSelectionChange,
@@ -224,7 +357,8 @@ export default {
             handlerCurrentChange,
             changeStatus,
             handlerDeleteConfirm,
-            handlerDetailed
+            handlerDetailed,
+            handlerOnload
         }
     }
 }

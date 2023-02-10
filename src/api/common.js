@@ -23,3 +23,27 @@ export function UploadFile(data = {}) {
     data,
   });
 }
+
+export function TableData(params = {}) {
+  return instance.request({
+    method: params.method,
+    url: params.url,
+    data: params.data,
+  });
+}
+
+export function SwitchStatus(params = {}) {
+  return instance.request({
+    method: params.method,
+    url: params.url,
+    data: params.data,
+  });
+}
+
+export function CommonApi(params = {}) {
+  return instance.request({
+    method: params.method,
+    url: params.url,
+    data: params.data,
+  });
+}
