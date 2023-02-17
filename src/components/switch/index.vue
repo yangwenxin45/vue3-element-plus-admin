@@ -1,9 +1,10 @@
 <template>
-    <el-switch v-model="init_data.value" :loading="init_data.loading" :before-change="handlerSwitch"></el-switch>
+    <el-switch v-model="init_data.value" :loading="init_data.loading" @change="handlerSwitch($event)">
+    </el-switch>
 </template>
 
 <script>
-import { reactive } from 'vue';
+import { reactive, watch } from 'vue';
 import { Status } from "@/api/info";
 import ApiUrl from "@/api/requestUrl";
 import { SwitchStatus } from "@/api/common";
@@ -27,8 +28,10 @@ export default {
             value: data[config.prop],
             loading: false
         });
+        watch(() => props.data, (newValue) => init_data.value = newValue[config.prop])
 
-        const handlerSwitch = () => {
+        const handlerSwitch = (value) => {
+            console.log(value);
             init_data.loading = true;
             // 单独使用Switch组件，或者集成在BasisTable列表组件中
             const url = config.api_url || ApiUrl?.[config.api_module]?.[config.api_key]?.url;
@@ -37,12 +40,13 @@ export default {
             if (!url) {
                 throw new Error("URL地址不存在");
             }
+            init_data.value = !init_data.value;
             const request_data = {
                 url,
                 method,
                 data: {
                     [key_id]: data[key_id],
-                    [config.prop]: !init_data.true
+                    [config.prop]: value
                 }
             }
             return new Promise((resolve, reject) => {
@@ -51,13 +55,14 @@ export default {
                         message: response.message,
                         type: "success"
                     });
-                    data[config.prop] = !init_data.value;
+                    init_data.value = value;
                     init_data.loading = false;
                     resolve(true);
                 }).catch(error => {
                     init_data.loading = false;
                     reject(false);
                 })
+                resolve(true);
             })
 
         }

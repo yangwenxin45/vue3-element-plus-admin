@@ -174,7 +174,7 @@ export default {
         });
 
         const handlerOnload = (data) => {
-            console.log(data);
+            // console.log(data);
         }
 
         const handlerGetList = () => {

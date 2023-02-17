@@ -1,3 +1,5 @@
+import { validate_email, validate_password } from "@/utils/validate";
+
 export function rulesHook() {
   const InitRules = (data = []) => {
     if (data.length === 0) {
@@ -18,6 +20,36 @@ export function rulesHook() {
       // 是否有其他的校验规则
       const rule = item.rule;
       if (rule && Array.isArray(rule) && rule.length > 0) {
+        rulesArr = rulesArr.concat(rule);
+      }
+      // 用户名
+      if (item.value_type === "username") {
+        const rule = {
+          validator(rule, value, callback, source, options) {
+            if (!value || value === "") {
+              callback(new Error("请输入用户名"));
+            } else if (!validate_email(value)) {
+              callback(new Error("邮箱格式不正确"));
+            } else {
+              callback();
+            }
+          },
+        };
+        rulesArr = rulesArr.concat(rule);
+      }
+      // 密码
+      if (item.value_type === "password") {
+        const rule = {
+          validator(rule, value, callback, source, options) {
+            if (!value || value === "") {
+              callback(new Error("请输入用密码"));
+            } else if (!validate_password(value)) {
+              callback(new Error("请输入>=6并且<=20位的密码，包含数字、字母"));
+            } else {
+              callback();
+            }
+          },
+        };
         rulesArr = rulesArr.concat(rule);
       }
       // 定义rules属性赋值

@@ -12,6 +12,7 @@ const state = {
   collapse: JSON.parse(sessionStorage.getItem("collapse")) || false,
   token: "" || getToken(),
   username: "" || getUsername(),
+  table_action_request: false,
 };
 const getters = {};
 const mutations = {
@@ -26,6 +27,9 @@ const mutations = {
   SET_USERNAME(state, value) {
     state.username = value;
     value && setUsername(value);
+  },
+  SET_TABLE_REQUEST(state) {
+    state.table_action_request = !state.table_action_request;
   },
 };
 const actions = {

@@ -1,5 +1,5 @@
 <template>
-    <el-form :label-width="label_width" :model="field" ref="formDom">
+    <el-form :label-width="label_width" :model="field" ref="formDom" v-loading="loading" element-loading-text="加载中，请稍候">
         <el-row>
             <template v-for="item in form_item" :key="item.prop">
                 <template v-if="!form_hidden[item.prop]">
@@ -12,17 +12,21 @@
                             <template v-if="item.type === 'input'">
                                 <el-input :disabled="form_disabled[item.prop]" v-model="field[item.prop]"
                                     :maxlength="item.max_length" :minlength="item.min_length"
-                                    :style="`width: ${item.width}`" :placeholder="item.placeholder" />
+                                    :style="`width: ${item.width}`" :placeholder="item.placeholder"
+                                    :type="item.value_type" />
                             </template>
                             <template v-if="item.type === 'upload'">
                                 <UploadFile :disabled="form_disabled[item.prop]" v-model:image-url="field[item.prop]" />
                             </template>
                             <template v-if="item.type === 'radio'">
-                                <el-radio-group :disabled="form_disabled[item.prop]" v-model="field[item.prop]"
+                                <template v-if="!item.options && item.callback && item.callback(item)">
+                                </template>
+                                <el-radio-group v-else :disabled="form_disabled[item.prop]" v-model="field[item.prop]"
                                     @change="handlerChange($event, item)">
-                                    <el-radio v-for="radio in item.options" :key="radio.value" :label="radio.value">{{
-                                        radio.label
-                                    }}</el-radio>
+                                    <el-radio v-for="radio in item.options" :key="radio[item.key_value] || radio.value"
+                                        :label="radio[item.key_value] || radio.value">{{
+                                            radio[item.key_label] || radio.label
+                                        }}</el-radio>
                                 </el-radio-group>
                             </template>
                             <template v-if="item.type === 'date'">
@@ -51,6 +55,13 @@
                                             checkbox.label
                                         }}</el-checkbox>
                                 </el-checkbox-group>
+                            </template>
+                            <template v-if="item.type === 'inputNumber'">
+                                <el-input-number :disabled="form_disabled[item.prop]" v-model="field[item.prop]"
+                                    :min="item.min || 0" :max="item.max || 99999999"></el-input-number>
+                            </template>
+                            <template v-if="item.type === 'slot'">
+                                <slot :name="item.slot_name"></slot>
                             </template>
                         </el-form-item>
                     </el-col>
@@ -106,6 +117,10 @@ export default {
         disabled: {
             type: Object,
             default: () => ({})
+        },
+        loading: {
+            type: Boolean,
+            default: false
         }
     },
     emits: ["callback"],
@@ -132,8 +147,14 @@ export default {
                 formDom.value.validate((valid) => valid && emit("callback"));
             }
             // 重置表单事件
-            if (data.key === 'reset') { }
+            if (data.key === 'reset') {
+                handlerFormReset();
+            }
         }
+        const handlerFormReset = () => {
+            formDom.value.resetFields();
+        }
+
         return {
             form_item,
             label_width,
@@ -142,7 +163,8 @@ export default {
             form_disabled,
             formDom,
             handlerChange,
-            handlerFormActive
+            handlerFormActive,
+            handlerFormReset
         }
     }
 }

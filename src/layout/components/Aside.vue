@@ -20,7 +20,10 @@
                 <template v-else>
                     <el-sub-menu v-if="item.children && item.children.length > 0" :index="item.path">
                         <template #title>
-                            <svg-icon :icon-name="item.meta && item.meta.icon" class-name="aside-menu-svg"></svg-icon>
+                            <div class="menu-icon">
+                                <svg-icon :icon-name="item.meta && item.meta.icon"
+                                    class-name="aside-menu-svg"></svg-icon>
+                            </div>
                             <!-- <el-icon>
                                 <document />
                             </el-icon> -->
@@ -100,5 +103,11 @@ export default {
         margin: auto;
         height: 30px;
     }
+}
+
+.menu-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 </style>

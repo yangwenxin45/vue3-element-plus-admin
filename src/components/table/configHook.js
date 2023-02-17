@@ -6,6 +6,9 @@ export function configHook() {
     batch_delete: true, // 批量删除按钮
     pagination: true, // 分页
     search: true,
+    action_request: false,
+    row_key: "id",
+    expand_all: true,
   });
 
   const configInit = (data = {}) => {

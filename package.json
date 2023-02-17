@@ -13,7 +13,7 @@
     "@wangeditor/editor-for-vue": "^5.1.12",
     "axios": "^1.2.2",
     "core-js": "^3.8.3",
-    "element-plus": "^2.2.10",
+    "element-plus": "^2.2.30",
     "js-cookie": "^3.0.1",
     "js-sha1": "^0.6.0",
     "vue": "^3.2.13",

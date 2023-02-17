@@ -18,6 +18,7 @@ export function requestHook() {
     data: {},
     delete_key: "id",
     search_params: {},
+    format_data: null,
   };
 
   const loadData = () => {
@@ -46,7 +47,19 @@ export function requestHook() {
     return new Promise((resolve, reject) => {
       TableData(request_data)
         .then((response) => {
-          table_data.data = response.data.data;
+          let response_data = response.data.data;
+          console.log(response_data);
+          // 是否格式化数据
+          if (
+            request_config.format_data &&
+            Object.prototype.toString.call(request_config.format_data) ===
+              "[object Function]"
+          ) {
+            response_data = request_config.format_data(response.data.data);
+          }
+          console.log(response_data);
+
+          table_data.data = response_data;
           table_data.total = response.data.total;
           table_data.loading = false;
           resolve(table_data.data);

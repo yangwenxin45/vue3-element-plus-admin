@@ -1,7 +1,7 @@
 <template>
     <SearchForm v-if="config.search" @callbackSearch="getList"></SearchForm>
     <el-table ref="table" :border="true" :data="table_data.data" style="width: 100%"
-        @selection-change="handlerSelectionChange">
+        @selection-change="handlerSelectionChange" :row-key="config.row_key" :default-expand-all="config.expand_all">
         <el-table-column v-if="config.selection" type="selection" width="55"></el-table-column>
         <template v-for="header in data.render_header" :key="header.prop">
             <el-table-column v-if="header.type === 'switch'" :label="header.label" :width="header.width">
@@ -37,12 +37,13 @@
 </template>
 
 <script>
-import { reactive, onBeforeMount } from 'vue';
+import { reactive, onBeforeMount, watch } from 'vue';
 import { configHook } from './configHook';
 import { requestHook } from "./requestHook";
 import Pagination from "@/components/pagination";
 import Switch from "@/components/switch";
 import SearchForm from "@/components/search";
+import { useStore } from "vuex";
 
 export default {
     name: 'TableComponents',
@@ -67,6 +68,11 @@ export default {
     },
     emits: ["onload"],
     setup(props, { emit }) {
+        const store = useStore();
+        watch(() => store.state.app.table_action_request, () => {
+            config.action_request && getList();
+        })
+
         const { config, configInit } = configHook();
         const { table_data, requestData, handlerDeleteConfirm, saveDataId } = requestHook();
         const data = reactive({

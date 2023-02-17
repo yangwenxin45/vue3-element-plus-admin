@@ -35,6 +35,41 @@ const routes = [
     ],
   },
   {
+    path: "/system",
+    name: "System",
+    meta: {
+      title: "系统配置",
+      icon: "system",
+    },
+    component: () => import("../layout/Index.vue"),
+    children: [
+      {
+        path: "/user",
+        name: "User",
+        meta: {
+          title: "用户列表",
+        },
+        component: () => import("../views/system/User.vue"),
+      },
+      {
+        path: "/role",
+        name: "Role",
+        meta: {
+          title: "角色列表",
+        },
+        component: () => import("../views/system/Role.vue"),
+      },
+      {
+        path: "/menu",
+        name: "Menu",
+        meta: {
+          title: "菜单列表",
+        },
+        component: () => import("../views/system/Menu.vue"),
+      },
+    ],
+  },
+  {
     path: "/news",
     name: "News",
     meta: {
@@ -67,25 +102,6 @@ const routes = [
           title: "信息详情",
         },
         component: () => import("../views/info/Detailed.vue"),
-      },
-    ],
-  },
-  {
-    path: "/user",
-    name: "User",
-    meta: {
-      title: "用户管理",
-      icon: "user",
-    },
-    component: () => import("../layout/Index.vue"),
-    children: [
-      {
-        path: "/userIndex",
-        name: "UserIndex",
-        meta: {
-          title: "用户列表",
-        },
-        component: () => import("../views/user/Index.vue"),
       },
     ],
   },
